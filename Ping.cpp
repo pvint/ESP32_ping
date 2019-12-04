@@ -136,12 +136,13 @@ static err_t ping_send(int s, ip4_addr_t *addr, int size) {
 
 	to.sin_len = sizeof(to);
 	to.sin_family = AF_INET;
-	inet_addr_from_ipaddr(&to.sin_addr, addr);
+
+  	inet_aton(ip4addr_ntoa (addr),  &to.sin_addr);
 
 	if ((err = sendto(s, iecho, ping_size, 0, (struct sockaddr*)&to, sizeof(to)))) {
 		transmitted++;
 	}
-	free(iecho)
+	free(iecho);
 	return (err ? ERR_OK : ERR_VAL);
 }
 
@@ -168,10 +169,7 @@ static void ping_recv(int s) {
 			gettimeofday(&end, NULL);
 
 			/// Get from IP address
-			ip4_addr_t fromaddr;
-			inet_addr_to_ipaddr(&fromaddr, &from.sin_addr);
-
-			strcpy(ipa, inet_ntoa(fromaddr));
+			strcpy(ipa, inet_ntoa(from.sin_addr));
 
 			// Get echo
 			iphdr = (struct ip_hdr *)buf;
