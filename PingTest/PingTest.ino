@@ -10,13 +10,15 @@
 #include  "ping.h"
 
 // the setup function runs once when you press reset or power the board
-const char ssid[] = "TP-LINK_C20B";  //  your network SSID (name)
-const char password[] = "paolo-48";       // your network password
+const char ssid[] = "SSID";  //  your network SSID (name)
+const char password[] = "PASSPHRASE";       // your network password
+
+IPAddress gateway;
 
 void setup() {
 
 	Serial.begin(115200);
-	Serial.print("Connecting t ");
+	Serial.print("Connecting to ");
 	Serial.println(ssid);
 	// WiFi.mode(WIFI_STA);
 
@@ -29,12 +31,17 @@ void setup() {
 		
 
 	}
-	Serial.println("Pinging address: 192.168.1.1");
+
+  gateway = WiFi.gatewayIP();
+  // To specify an IP to ping, modify and uncomment line below
+  //gateway = IPAddress( 192, 168, 1, 107 );
+  
+	Serial.printf("\nPinging address %s from %s\n", gateway.toString().c_str(), WiFi.localIP().toString().c_str());
 }
 
 // the loop function runs over and over again until power down or reset
 void loop() {
-	int ia[4] = { 192,168,1,1 };
+	int ia[4] = { gateway[0], gateway[1], gateway[2], gateway[3] };
 	int  i = 0;
 	while (Serial.available()) {
 		
@@ -51,11 +58,11 @@ void loop() {
 			ia[i++] =val ;
 	}
 	IPAddress adr = IPAddress(ia[0], ia[1], ia[2], ia[3]);
-	Serial.printf("Ping : %d . %d . %d . %d ->", ia[0], ia[1], ia[2], ia[3]);
+	Serial.printf("Ping %d.%d.%d.%d ->", ia[0], ia[1], ia[2], ia[3]);
 	if (ping_start(adr, 4, 0, 0, 5))
-		Serial.println("OK");
+		Serial.println(" OK");
 	else
-		Serial.println("FAILED");
+		Serial.println(" FAILED");
 	delay(10000);
 
 }
